@@ -52,18 +52,5 @@ public class ControllerHandler {
         }
 
         return controller;
-
-//        if (httpUri.isEndWithResourceType() && !httpUri.isEndWithHtml()) {
-//            return new StaticController();
-//        }
-//        if (httpUri.isEndWithHtml()) {
-//            return new DynamicController();
-//        }
-//
-//        return controllers
-//                .stream()
-//                .filter(controller -> controller.isMatch(httpRequest))
-//                .findFirst()
-//                .orElseThrow(() -> new ControllerNotFoundException("Not Found Controller"));
     }
 }
