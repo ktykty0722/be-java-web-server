@@ -18,7 +18,7 @@ public class UserController implements Controller {
         RequestLine requestLine = httpRequest.getRequestLine();
         HttpUri httpUri = requestLine.getHttpUri();
 
-        Method method = UserService.class.getDeclaredMethod(httpUri.getDetachServicePath(), HttpRequest.class);
+        Method method = UserService.class.getDeclaredMethod(httpUri.getDetachServicePath().split("\\.")[0], HttpRequest.class);
         return (HttpResponse) method.invoke(userService, httpRequest);
 
     }

@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ControllerHandler {
     private static final Logger logger = LoggerFactory.getLogger(ControllerHandler.class);
@@ -35,17 +36,34 @@ public class ControllerHandler {
     public static Controller findController(HttpRequest httpRequest) {
         RequestLine requestLine = httpRequest.getRequestLine();
         HttpUri httpUri = requestLine.getHttpUri();
-        if (httpUri.isEndWithResourceType() && !httpUri.isEndWithHtml()) {
-            return new StaticController();
+        Controller controller = controllers
+                .stream()
+                .filter(con -> con.isMatch(httpRequest))
+                .findFirst()
+                .orElse(null);
+        if (Objects.nonNull(controller)) {
+            return controller;
         }
-        if (httpUri.isEndWithHtml()) {
-            return new DynamicController();
+        if (httpUri.isEndWithResourceType()) {
+            controller = new StaticController();
+        }
+        if(Objects.isNull(controller)) {
+            throw new ControllerNotFoundException("Not Found Controller");
         }
 
-        return controllers
-                .stream()
-                .filter(controller -> controller.isMatch(httpRequest))
-                .findFirst()
-                .orElseThrow(() -> new ControllerNotFoundException("Not Found Controller"));
+        return controller;
+
+//        if (httpUri.isEndWithResourceType() && !httpUri.isEndWithHtml()) {
+//            return new StaticController();
+//        }
+//        if (httpUri.isEndWithHtml()) {
+//            return new DynamicController();
+//        }
+//
+//        return controllers
+//                .stream()
+//                .filter(controller -> controller.isMatch(httpRequest))
+//                .findFirst()
+//                .orElseThrow(() -> new ControllerNotFoundException("Not Found Controller"));
     }
 }
