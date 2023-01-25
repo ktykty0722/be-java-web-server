@@ -1,9 +1,8 @@
 package webserver;
 
-import controller.Controller;
 import controller.ControllerHandler;
-import http.HttpRequest;
-import http.HttpResponse;
+import http.request.HttpRequest;
+import http.response.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,9 +29,8 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
 
             HttpRequest httpRequest = HttpRequest.from(br);
-            HttpResponse httpResponse = new HttpResponse(dos);
-            Controller controller = ControllerHandler.findController(httpRequest);
-            controller.doService(httpRequest, httpResponse);
+            HttpResponse httpResponse = ControllerHandler.handle(httpRequest);
+            httpResponse.sendResponse(dos, httpRequest.getHttpVersion());
         } catch (Exception e) {
             logger.error(e.getMessage());
         }

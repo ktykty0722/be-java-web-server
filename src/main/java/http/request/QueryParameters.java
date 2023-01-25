@@ -1,4 +1,4 @@
-package http;
+package http.request;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -19,6 +19,7 @@ public class QueryParameters {
     public static QueryParameters from(String query) {
         return Stream.of(query.split("&"))
                 .map(q -> q.split("="))
+                .filter(q -> q.length == 2)
                 .collect(collectingAndThen(toMap(q -> q[0], q -> URLDecoder.decode(q[1], StandardCharsets.UTF_8)), QueryParameters::new));
 
     }

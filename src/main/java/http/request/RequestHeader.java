@@ -1,4 +1,4 @@
-package http;
+package http.request;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,5 +30,13 @@ public class RequestHeader {
                         .split(","))
                 .findFirst()
                 .orElseThrow();
+    }
+
+    public boolean hasContentLength() {
+        return headers.containsKey("Content-Length");
+    }
+
+    public int getContentLength() {
+        return Integer.parseInt(headers.get("Content-Length"));
     }
 }

@@ -1,26 +1,29 @@
 package controller;
 
-import db.Database;
-import http.*;
-import model.User;
+import http.request.HttpRequest;
+import http.request.HttpUri;
+import http.response.HttpResponse;
+import http.response.HttpResponseFactory;
+import service.UserService;
 
-public class UserController implements Controller{
+import java.util.Arrays;
 
-    private static final String path = "user";
-    @Override
-    public void doService(HttpRequest httpRequest, HttpResponse httpResponse) {
-        RequestLine requestLine = httpRequest.getRequestLine();
-        Uri uri = requestLine.getUri();
-        QueryParameters queryParameters = uri.getQueryParameters();
-        Database.addUser(User.from(queryParameters.getParameters()));
-        httpResponse.response302Header("/index.html");
-        httpResponse.emptyBody();
-    }
+public class UserController implements Controller {
+
+    private static final UserService userService = new UserService();
 
     @Override
-    public boolean isMatch(HttpRequest httpRequest) {
-        RequestLine requestLine = httpRequest.getRequestLine();
-        Uri uri = requestLine.getUri();
-        return path.equals(uri.getDetachControllerPath());
+    public HttpResponse doService(HttpRequest httpRequest) {
+        HttpUri httpUri = httpRequest.getUri();
+        try {
+            return (HttpResponse) Arrays.stream(UserService.class.getMethods())
+                    .filter(m -> httpUri.getPath().contains(m.getName()))
+                    .findFirst()
+                    .get()
+                    .invoke(userService, httpRequest);
+        } catch (Exception e) {
+            return HttpResponseFactory.NOT_FOUND("Not Found Method");
+        }
     }
+
 }
